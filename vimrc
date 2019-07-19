@@ -123,39 +123,29 @@ xnoremap <leader>< <C-w>10<
 " For Vim-notes
 let g:notes_title_sync = 'rename_file'
 let g:notes_suffix = '.vnote'
-let g:notes_directories = ['~/Drive/Notes']
+let g:notes_directories = ['~/Notes']
 
 " For Vimwiki lab notebook
 let work_wiki = {}
-let work_wiki.path = '~/Drive/Notes/Wiki/WorkWiki/'
+let work_wiki.path = '~/Notes/Wiki/WorkWiki/'
 let work_wiki.syntax = 'markdown'
 let work_wiki.ext = '.md'
  
 " For personal Vimwiki
 let my_wiki = {}
-let my_wiki.path = '~/Drive/Notes/Wiki/MyWiki/'
+let my_wiki.path = '~/Notes/Wiki/MyWiki/'
 let my_wiki.syntax = 'markdown'
 let my_wiki.ext = '.md'
 
 let g:vimwiki_list = [work_wiki, my_wiki]
-"let g:vimwiki_global_ext = 0
 
-" For viewing markdown as html and generating html wikis
-":command! MD2HTML execute ':!pandoc -B /Users/jeff/Drive/Notes/work_wiki/header.html -A /Users/jeff/Drive/Notes/work_wiki/footer.html --css /Users/jeff/Drive/Notes/work_wiki/github.css --metadata pagetitle="%:r.md" --mathjax -s "%" -o "%:r.html"' | execute ':!open "%:r.html"' | execute ':redraw!'
+:command! MD2HTML execute ':!/Users/jeff/Notes/Wiki/scripts/wiki_md2html.bash %:p'
 
-:command! MD2HTML execute ':!/Users/jeff/Drive/Notes/Wiki/scripts/wiki_md2html.bash %:p'
+:command! AllMD2HTML execute ':!/Users/jeff/Notes/Wiki/scripts/wiki_allmd2html.bash %:p'
 
-:command! AllMD2HTML execute ':!/Users/jeff/Drive/Notes/Wiki/scripts/wiki_allmd2html.bash %:p'
-
-:command! MD2PDF execute ':!/Users/jeff/Drive/Notes/Wiki/scripts/md2pdf.bash %:p'
+:command! MD2PDF execute ':!/Users/jeff/Notes/Wiki/scripts/md2pdf.bash %:p'
 
 :command! MDView execute ':! grip %' | execute ':redraw!'
-
-":command! MD2HTML execute ':!if [ -f %:p:h/md2html.bash ]; then cd %:p:h && %:p:h/md2html.bash %:p:t; else echo This is not a markdown wiki index file.;fi' | execute ':!if [ -f "%:p:h/index.html" ]; then open "%:p:h/index.html"; fi' | execute ':redraw!'
-
-":command! AllMD2HTML execute ':!if [ -f %:p:h/allmd2html.bash ]; then cd %:p:h && %:p:h/md2html.bash; else echo This is not a markdown wiki index file.;fi' | execute ':!if [ -f "%:p:h/index.html" ]; then open "%:p:h/index.html"; fi' | execute ':redraw!'
-
-":command! MD2PDF execute ':!cd %:p:h && pandoc -N --template=/Users/jeff/Notes/work_wiki/latex_template.tex --variable mainfont="Palatino" --variable sansfont="Helvetica" --variable monofont="Menlo" --variable fontsize=12pt --variable version=2.0 "%:p:t" --pdf-engine=xelatex --toc -o "%:p:t:r.pdf"' | execute ':!cd %:p:h && open "%:p:t:r.pdf"' | execute ':redraw!'
 
 map <leader>wm :MD2HTML<CR>
 map <leader>wl :AllMD2HTML<CR>
@@ -174,9 +164,6 @@ nnoremap zo zr
 xnoremap zo zr
 nnoremap zc zm
 xnoremap zc zm
-
-" The almighty em dash
-"imap -- —
 
 " Set spellchecker
 map <leader>sp :setlocal spell<CR>

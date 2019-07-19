@@ -21,6 +21,7 @@ else
         file="new-notebook.ipynb"
     else
         file=""
+    fi
 fi
 jupyter notebook $file
 }

@@ -248,3 +248,7 @@ cm() {
   cd build
   cmake ..
 }
+
+dexec() {
+    docker exec -it `docker ps -f "name=executer" --format "{{.ID}}"` bash
+}

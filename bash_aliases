@@ -234,9 +234,6 @@ reduce_movie() {
 pystats() {
   mount=$PWD
   docker run -it --rm -v ${mount}:/app/ -p 8888:8888 --name pystats jeffmm/rpy2
-  #export JUPYTER_TOKEN='easy'
-  #docker run -it -d --rm -v ${mount}:/app/ -p 8899:8888 --name pystats -e JUPYTER_TOKEN jeffmm/rpy2
-  #open "http://localhost:8899?token=${JUPYTER_TOKEN}"
 }
 
 cm() {

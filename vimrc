@@ -1,3 +1,5 @@
+" Set up vim notes/wiki to use encrypted folder with pCloud
+let crypto = system("[ -r ~/pCloud\\ Drive/Crypto\\ Folder/Notes ] && echo 1 || echo 0".shellescape(expand('%:h')))
 
 set nocompatible
 
@@ -13,13 +15,14 @@ Plugin 'tpope/vim-sensible'
 Plugin 'ervandew/supertab'
 Plugin 'tpope/vim-fugitive'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'xolox/vim-notes'
 Plugin 'xolox/vim-misc'
 Plugin 'othree/html5.vim'
-Plugin 'vimwiki/vimwiki'
-Plugin 'itchyny/calendar.vim'
+if crypto
+  Plugin 'xolox/vim-notes'
+  Plugin 'vimwiki/vimwiki'
+endif
 Plugin 'w0rp/ale'
-Plugin 'tpope/vim-surround'
+"Plugin 'tpope/vim-surround'
 "Plugin 'rhysd/vim-clang-format'
 "Plugin 'SirVer/ultisnips'
 "Plugin 'honza/vim-snippets'
@@ -36,10 +39,6 @@ let g:UltiSnipsJumpForwardTrigger="<c-f>"
 let g:UltiSnipsJumpBackwardTrigger="<c-d>"
 let g:UltiSnipsEditSplit="horizontal"
 let g:UltiSnipsSnippetsDir="~/.vim/bundle/vim-snippets/UltiSnips"
-
-" Setup for vim calendar
-let g:calendar_google_calendar = 1
-
 
 " Turn on vim autocomplete
 set omnifunc=syntaxcomplete#Complete
@@ -60,12 +59,6 @@ autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 set shiftwidth=4
 set tabstop=4
 set expandtab
-
-" Fix C++ indentation
-"setlocal autoindent
-"setlocal cindent
-"setlocal cinoptions=>s,e0,n0,f0,{0,}0,^0,L-1,:s,=s,l0,b0,gs,hs,ps,ts,is,+s,c3,C0,/0,(2s,us,U0,w0,W0,m0,j0,J0,)20,*70,#0
-
 
 let g:ale_linters = {
 \   'python': ['flake8'],
@@ -88,10 +81,11 @@ let g:ale_linters_explicit = 1
 let g:ale_fix_on_save = 0
 let g:ale_lint_on_save = 1
 
-" Set indentation to 4 in python..... :(
 au FileType cpp setl autoindent expandtab shiftwidth=2 tabstop=2 textwidth=80 fo+=t fo-=l
 au FileType python setl shiftwidth=4 tabstop=4 textwidth=88 fo+=t fo-=l
+au FileType yaml setl shiftwidth=2 tabstop=2 textwidth=98 fo+=t fo-=l
 au BufNewFile,BufRead *.ejs set filetype=html
+au BufNewFile,BufRead *.tpp set filetype=cpp
 
 " Let leader key be comma key
 let mapleader=","
@@ -102,10 +96,9 @@ map <C-p> :CtrlP<CR>
 map <leader>l :Latexmk<CR>
 :command! Skim execute ':silent! !open -ga skim %:r.pdf' | execute ':redraw!'
 map <leader>o :Skim<CR>
-map <leader>d :s/TODO\\|XXX/DONE/g<CR>
 map <leader>b :split %:r.bib<CR>
 map fq :ALEFix<CR>
-let g:gitgutter_max_signs=1000
+let g:gitgutter_max_signs=10000
 
 " Fixes bugs with spellcheck in tex documents
 if &filetype ==# 'tex'
@@ -127,60 +120,56 @@ nnoremap H ^
 nnoremap L $
 xnoremap H ^
 xnoremap L $
-
 " NO AUTO WRAP
 set textwidth=0
 set wrapmargin=0
-
-" Insert current date followed by day of the week
-:nnoremap <C-d> "=strftime("%Y%m%d %A")<CR>P
-
+" Insert current date followed by day of the week in markdown syntax
+noremap <leader>d "=strftime("## %Y%m%d %A")<CR>P
 " Quickly resize vertical splits
 nnoremap <leader>> <C-w>10>
 xnoremap <leader>> <C-w>10>
 nnoremap <leader>< <C-w>10<
 xnoremap <leader>< <C-w>10<
 
-" For Vim-notes
-let g:notes_title_sync = 'rename_file'
-let g:notes_suffix = '.vnote'
-let g:notes_directories = ['~/Drive/Notes']
+" If Crypto Folder is unlocked, initialize vim notes
+if crypto
 
-" For Vimwiki lab notebook
-let work_wiki = {}
-let work_wiki.path = '~/Drive/Notes/Wiki/WorkWiki/'
-let work_wiki.syntax = 'markdown'
-let work_wiki.ext = '.md'
- 
-" For personal Vimwiki
-let my_wiki = {}
-let my_wiki.path = '~/Drive/Notes/Wiki/MyWiki/'
-let my_wiki.syntax = 'markdown'
-let my_wiki.ext = '.md'
+    " For Vim-notes
+    let g:notes_title_sync = 'rename_file'
+    let g:notes_suffix = '.vnote'
+    let g:notes_directories = ['~/pCloud\ Drive/Crypto\ Folder/Notes']
 
-let g:vimwiki_list = [work_wiki, my_wiki]
-"let g:vimwiki_global_ext = 0
+    " For Vimwiki lab notebook
+    let work_wiki = {}
+    let work_wiki.path = '~/pCloud\ Drive/Crypto\ Folder/Notes/Wiki/WorkWiki/'
+    let work_wiki.syntax = 'markdown'
+    let work_wiki.ext = '.md'
+     
+    " For personal Vimwiki
+    let my_wiki = {}
+    let my_wiki.path = '~/pCloud\ Drive/Crypto\ Folder/Notes/Wiki/MyWiki/'
+    let my_wiki.syntax = 'markdown'
+    let my_wiki.ext = '.md'
 
-" For viewing markdown as html and generating html wikis
-":command! MD2HTML execute ':!pandoc -B /Users/jeff/Drive/Notes/work_wiki/header.html -A /Users/jeff/Drive/Notes/work_wiki/footer.html --css /Users/jeff/Drive/Notes/work_wiki/github.css --metadata pagetitle="%:r.md" --mathjax -s "%" -o "%:r.html"' | execute ':!open "%:r.html"' | execute ':redraw!'
+    let g:vimwiki_list = [work_wiki, my_wiki]
 
-:command! MD2HTML execute ':!/Users/jeff/Drive/Notes/Wiki/scripts/wiki_md2html.bash %:p'
+    " For viewing markdown as html and generating html wikis
+    :command! MD2HTML execute ':!/Users/jeff/pCloud\ Drive/Crypto\ Folder/Notes/Wiki/scripts/wiki_md2html.bash %:p'
 
-:command! AllMD2HTML execute ':!/Users/jeff/Drive/Notes/Wiki/scripts/wiki_allmd2html.bash %:p'
+    :command! AllMD2HTML execute ':!/Users/jeff/pCloud\ Drive/Crypto\ Folder/Notes/Wiki/scripts/wiki_allmd2html.bash %:p'
 
-:command! MD2PDF execute ':!/Users/jeff/Drive/Notes/Wiki/scripts/md2pdf.bash %:p'
+    :command! MD2PDF execute ':!/Users/jeff/pCloud\ Drive/Crypto\ Folder/Notes/Wiki/scripts/md2pdf.bash %:p'
 
-:command! MDView execute ':! grip %' | execute ':redraw!'
+    :command! MDView execute ':! grip %' | execute ':redraw!'
+    map <leader>wm :MD2HTML<CR>
+    map <leader>wl :AllMD2HTML<CR>
+    map <leader>wp :MD2PDF<CR>
 
-":command! MD2HTML execute ':!if [ -f %:p:h/md2html.bash ]; then cd %:p:h && %:p:h/md2html.bash %:p:t; else echo This is not a markdown wiki index file.;fi' | execute ':!if [ -f "%:p:h/index.html" ]; then open "%:p:h/index.html"; fi' | execute ':redraw!'
+else
+    " If crypto folder is locked, let the me know that I can't use vim notes/wiki
+    echo "Crypto folder is locked. Vim notes disabled"
 
-":command! AllMD2HTML execute ':!if [ -f %:p:h/allmd2html.bash ]; then cd %:p:h && %:p:h/md2html.bash; else echo This is not a markdown wiki index file.;fi' | execute ':!if [ -f "%:p:h/index.html" ]; then open "%:p:h/index.html"; fi' | execute ':redraw!'
-
-":command! MD2PDF execute ':!cd %:p:h && pandoc -N --template=/Users/jeff/Notes/work_wiki/latex_template.tex --variable mainfont="Palatino" --variable sansfont="Helvetica" --variable monofont="Menlo" --variable fontsize=12pt --variable version=2.0 "%:p:t" --pdf-engine=xelatex --toc -o "%:p:t:r.pdf"' | execute ':!cd %:p:h && open "%:p:t:r.pdf"' | execute ':redraw!'
-
-map <leader>wm :MD2HTML<CR>
-map <leader>wl :AllMD2HTML<CR>
-map <leader>wp :MD2PDF<CR>
+endif
  
 " To quickly enter new buffer/return to previous buffer
 nnoremap ff gf
@@ -195,9 +184,6 @@ nnoremap zo zr
 xnoremap zo zr
 nnoremap zc zm
 xnoremap zc zm
-
-" The almighty em dash
-"imap -- —
 
 " Set spellchecker
 map <leader>sp :setlocal spell<CR>

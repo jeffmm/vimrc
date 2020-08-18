@@ -18,14 +18,12 @@ Plugin 'airblade/vim-gitgutter'
 Plugin 'xolox/vim-misc'
 Plugin 'othree/html5.vim'
 if crypto
-  Plugin 'xolox/vim-notes'
   Plugin 'vimwiki/vimwiki'
 endif
 Plugin 'w0rp/ale'
 "Plugin 'tpope/vim-surround'
-"Plugin 'rhysd/vim-clang-format'
-"Plugin 'SirVer/ultisnips'
-"Plugin 'honza/vim-snippets'
+Plugin 'SirVer/ultisnips'
+Plugin 'honza/vim-snippets'
 call vundle#end()
 
 filetype on
@@ -33,12 +31,9 @@ filetype plugin indent on
 syntax on
 
 " Snippets
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-f>"
-let g:UltiSnipsJumpBackwardTrigger="<c-d>"
-let g:UltiSnipsEditSplit="horizontal"
+let g:UltiSnipsEditSplit="vertical"
 let g:UltiSnipsSnippetsDir="~/.vim/bundle/vim-snippets/UltiSnips"
+let g:ultisnips_python_style="google"
 
 " Turn on vim autocomplete
 set omnifunc=syntaxcomplete#Complete
@@ -108,18 +103,17 @@ endif
 " let up and down movement be aware of screen wrap
 nnoremap <expr> j v:count ? 'j' : 'gj'
 nnoremap <expr> k v:count ? 'k' : 'gk'
+nnoremap <expr> J v:count ? '5j' : '5gj'
+nnoremap <expr> K v:count ? '5k' : '5gk'
 xnoremap <expr> j v:count ? 'j' : 'gj'
 xnoremap <expr> k v:count ? 'k' : 'gk'
+xnoremap <expr> J v:count ? '5j' : '5gj'
+xnoremap <expr> K v:count ? '5k' : '5gk'
 
-" Quick navigation
-nnoremap J 5gj
-nnoremap K 5gk
-xnoremap J 5gj
-xnoremap K 5gk
-nnoremap H ^
-nnoremap L $
-xnoremap H ^
-xnoremap L $
+nnoremap H g^
+nnoremap L g$
+xnoremap H g^
+xnoremap L g$
 " NO AUTO WRAP
 set textwidth=0
 set wrapmargin=0
@@ -151,23 +145,21 @@ if crypto
     let my_wiki.syntax = 'markdown'
     let my_wiki.ext = '.md'
 
-    let g:vimwiki_list = [work_wiki, my_wiki]
+    let g:vimwiki_list = [my_wiki, work_wiki]
 
-    " For viewing markdown as html and generating html wikis
-    :command! MD2HTML execute ':!/Users/jeff/pCloud\ Drive/Crypto\ Folder/Notes/Wiki/scripts/wiki_md2html.bash %:p'
+    " Disable folding in vimwiki
+    let g:vimwiki_conceallevel = 0
+    let g:vimwiki_url_maxsave = 0
 
-    :command! AllMD2HTML execute ':!/Users/jeff/pCloud\ Drive/Crypto\ Folder/Notes/Wiki/scripts/wiki_allmd2html.bash %:p'
-
-    :command! MD2PDF execute ':!/Users/jeff/pCloud\ Drive/Crypto\ Folder/Notes/Wiki/scripts/md2pdf.bash %:p'
+    :command! MD2PDF execute ':!/Users/jeff/pCloud\ Drive/Misc/md2pdf.bash %:p'
 
     :command! MDView execute ':! grip %' | execute ':redraw!'
-    map <leader>wm :MD2HTML<CR>
-    map <leader>wl :AllMD2HTML<CR>
     map <leader>wp :MD2PDF<CR>
 
 else
     " If crypto folder is locked, let the me know that I can't use vim notes/wiki
-    echo "Crypto folder is locked. Vim notes disabled"
+    map <leader>ww :echo "Crypto folder is locked. Vim notes disabled"<CR>
+    map 2<leader>ww :echo "Crypto folder is locked. Vim notes disabled"<CR>
 
 endif
  
@@ -195,8 +187,16 @@ set rulerformat=%55(%{strftime('%a\ %b\ %e\ %I:%M\ %p')}\ %5l,%-6(%c%V%)\ %P%)
 " Set ignore options
 set wildignore+=*.o,spb_dynamics,*.default,*.equil,*.thermo,*.posit,*.initial_config,*.def,*.config,*.configurator,frames,mov*,*.log,*.d,*.aux,*.toc,*.pdf,*.fls,*.fdb_latexmk,*.blg,*.bbl,*.bib,*.png,*.tiff,*.jpg
 
+let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+let g:ctrlp_custom_ignore = {
+  \ 'dir': 'data',
+  \ 'file': '\v\.(exe|so|dll|ipynb)$',
+  \ }
+
 " Python doc string
 " doc string full
 map <leader>dsf o"""Short docstring<ENTER><ENTER>Extended Docstring<ENTER><ENTER>Args:<ENTER>var1 (type): Input variable<ENTER><Enter><C-D>Returns:<ENTER>(type): Returned variable<ENTER><ENTER><C-D>"""<ESC>
 " doc string short
 map <leader>dss o""""""<ESC>hhi
+map <leader>sn :call UltiSnips#ListSnippets()<CR>
+
